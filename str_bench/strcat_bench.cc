@@ -4,6 +4,7 @@
 #include <benchmark/benchmark.h>
 #include <sstream>
 #include <string>
+#include <utility>
 
 std::string s1 = "very very long long string 1";
 std::string s2 = "very very long long string 2";
@@ -57,7 +58,7 @@ static void BENCH_STL_OSTREAM(benchmark::State &state) {
 	for (auto _ : state) {
 		  std::ostringstream oss{};
 		  oss << s1 << s2 << s3;
-		  std::string s{ oss.str()};
+		  std::string s{ std::move(oss.str())};
 		benchmark::DoNotOptimize(s);
 	}
 }
@@ -66,7 +67,7 @@ static void BENCH_STL_SSTREAM(benchmark::State &state) {
 	for (auto _ : state) {
 		std::stringstream ss{};
 		ss << s1 << s2 << s3;
-		std::string s{ ss.str()};
+		std::string s{ std::move(ss.str())};
 		benchmark::DoNotOptimize(s);
 	}
 }
