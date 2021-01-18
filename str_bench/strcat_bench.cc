@@ -2,6 +2,7 @@
 #include "absl/strings/str_cat.h"
 #include "folly/FBString.h"
 #include <benchmark/benchmark.h>
+#include <sstream>
 #include <string>
 
 std::string s1 = "very very long long string 1";
@@ -51,6 +52,25 @@ static void BENCH_STL_APPEND_RESERVE(benchmark::State &state) {
 		benchmark::DoNotOptimize(s);
 	}
 }
+
+static void BENCH_STL_OSTREAM(benchmark::State &state) {
+	for (auto _ : state) {
+		  std::ostringstream oss{};
+		  oss << s1 << s2 << s3;
+		  std::string s{ oss.str()};
+		benchmark::DoNotOptimize(s);
+	}
+}
+
+static void BENCH_STL_SSTREAM(benchmark::State &state) {
+	for (auto _ : state) {
+		std::stringstream ss{};
+		ss << s1 << s2 << s3;
+		std::string s{ ss.str()};
+		benchmark::DoNotOptimize(s);
+	}
+}
+
 
 static void BENCH_FOLLY_PLUS(benchmark::State &state) {
 	for (auto _ : state) {
@@ -108,6 +128,9 @@ BENCHMARK(BENCH_ABSEIL_APPEND)->Unit(benchmark::kNanosecond);
 BENCHMARK(BENCH_STL_PLUS)->Unit(benchmark::kNanosecond);
 BENCHMARK(BENCH_STL_APPEND)->Unit(benchmark::kNanosecond);
 BENCHMARK(BENCH_STL_APPEND_RESERVE)->Unit(benchmark::kNanosecond);
+BENCHMARK(BENCH_STL_OSTREAM)->Unit(benchmark::kNanosecond);
+BENCHMARK(BENCH_STL_SSTREAM)->Unit(benchmark::kNanosecond);
+
 BENCHMARK(BENCH_FOLLY_PLUS)->Unit(benchmark::kNanosecond);
 BENCHMARK(BENCH_FOLLY_APPEND)->Unit(benchmark::kNanosecond);
 BENCHMARK(BENCH_FOLLY_APPEND_RESERVE)->Unit(benchmark::kNanosecond);
